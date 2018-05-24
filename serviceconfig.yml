@@ -1,9 +1,11 @@
 AMQP_URI: 'pyamqp://guest:guest@localhost'
 WEB_SERVER_ADDRESS: '0.0.0.0:8000'
-YOWSUP_USERNAME: !env_var '${USERNAME}'
-YOWSUP_PASSWORD: !env_var '${PASSWORD}'
-TOKEN_RESEND_MESSAGES: !env_var '${TOKEN_RESEND_MESSAGES}'
-ENDPOINT_RESEND_MESSAGES: !env_var '${ENDPOINT_RESEND_MESSAGES}'
+YOWSUP_USERNAME: !env_var '919136783526'
+YOWSUP_PASSWORD: !env_var 'qAcOekH7Vc6x4tDNs9u6JGnF0Dw='
+TOKEN_RESEND_MESSAGES: !env_var 'mytoken123'
+ENDPOINT_RESEND_MESSAGES: !env_var 'http://wapi.dinterview.in/i.php'
+API_USERNAME: !env_var 'hncvj'
+API_PASS: !env_var '8080980809'
 rpc_exchange: 'nameko-rpc'
 max_workers: 1
 parent_calls_tracked: 10

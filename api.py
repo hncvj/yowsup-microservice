@@ -8,7 +8,7 @@ from flasgger import Swagger
 from flasgger.utils import swag_from
 from flask import Flask, request
 from nameko.standalone.rpc import ClusterRpcProxy
-
+import simplejson as json
 from src.layer import STATUS_FILES_DIRECTORY
 
 app = Flask(__name__)
@@ -72,7 +72,8 @@ def send():
             pass
 
     if status == 'success':
-        msg = "The message was successfully sent"
+        return json.dumps({'success':True}), 200, {'ContentType':'application/json'}
+        #msg = "The message was successfully sent"
     elif status is None:
         # if the username is in environment variables
         _from = os.getenv('USERNAME')

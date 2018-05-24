@@ -7,6 +7,7 @@ from yowsup.common import YowConstants
 import datetime
 import os
 import logging
+import base64
 from yowsup.layers.protocol_groups.protocolentities import *
 from yowsup.layers.protocol_presence.protocolentities import *
 from yowsup.layers.protocol_messages.protocolentities import *
@@ -22,6 +23,7 @@ from yowsup.common.tools import Jid
 from yowsup.common.optionalmodules import PILOptionalModule, AxolotlOptionalModule
 import urllib.request
 import base64
+import uuid
 from time import sleep
 
 logger = logging.getLogger(__name__)
@@ -56,6 +58,7 @@ class SendReciveLayer(YowInterfaceLayer):
 
         self.tokenReSendMessage = tokenReSendMessage
         self.urlReSendMessage = urlReSendMessage
+        
 
         # add aliases to make it user to use commands. for example you can then do:
         # /message send foobar "HI"
@@ -149,7 +152,7 @@ class SendReciveLayer(YowInterfaceLayer):
 
         messageOut = ""
         if message.getType() == "text":
-            messageOut = '"' + self.getTextMessageBody(message) + '"'
+            messageOut = '"' + self.getTextMessageBody(message).replace('\n','\\n').replace('"','\\"') + '"'
         elif message.getType() == "media" and message.getMediaType() in ("image", "audio", "video"):
             messageOut = self.getMediaMessageBody(message)
         elif message.getType() == "media" and message.getMediaType() == "location":
@@ -168,7 +171,7 @@ class SendReciveLayer(YowInterfaceLayer):
             FROM=sender,
             TO=self.myNumber,
             TIME=formattedDate,
-            MESSAGE=messageOut.encode('utf8').decode() if sys.version_info >= (3, 0) else messageOut,
+            MESSAGE=messageOut.encode('utf-8').decode() if sys.version_info >= (3, 0) else messageOut,
             MESSAGE_ID=message.getId(),
             TYPE=message.getType(),
             NOTIFY=message.getNotify(),
@@ -180,7 +183,9 @@ class SendReciveLayer(YowInterfaceLayer):
         jsondataasbytes = output.encode('utf-8')  # needs to be bytes
         req.add_header('Content-Length', len(jsondataasbytes))
         req.add_header('TOKEN', self.tokenReSendMessage)
-
+        req.add_header('User-Agent', 'Mozilla/5.0')
+        req.add_header('USER', 'hncvj')
+        req.add_header('PASS', '8080980809')
         # resend message to url from configuration
         try:
             response = urllib.request.urlopen(req, jsondataasbytes)
@@ -240,13 +245,22 @@ class SendReciveLayer(YowInterfaceLayer):
             return "[Media Type: %s]" % message.getMediaType()
 
     def getDownloadableMediaMessageBody(self, message):
-        return "{{\"type\":\"{media_type}\",\"size\":\"{media_size}\",\"url\":\"{media_url}\",\"content\":\"{media_content}\",\"caption\":\"{media_caption}\"}}".format(
-            media_type=message.getMediaType(),
-            media_size=message.getMediaSize(),
-            media_url=message.getMediaUrl(),
-	        media_content=base64.b64encode(message.getMediaContent()).decode(),
-            media_caption=message.getCaption()
-        )
+        imgname = uuid.uuid4().hex
+        path = os.getcwd()+'/static'
+        fullfile = "%s/%s.jpg"%(path,imgname)
+
+        with open(fullfile,"wb") as f:
+            f.write(message.getMediaContent())
+            f.close()
+
+        #return "{{\"type\":\"{media_type}\",\"size\":\"{media_size}\",\"url\":\"{media_url}\",\"content\":\"{media_content}\",\"caption\":\"{media_caption}\"}}".format(
+           #media_type=message.getMediaType(),
+           #media_size=message.getMediaSize(),
+           #media_url=message.getMediaUrl(),
+	       #media_content=base64.b64encode(message.getMediaContent()).decode(),
+           #media_caption=message.getCaption()
+        #)
+        return "{{\"type\":\"{media_type}\",\"size\":\"{media_size}\",\"url\":\"{media_url}\",\"caption\":\"{media_caption}\"}}".format(media_type=message.getMediaType(),media_size=message.getMediaSize(),media_url="/static/%s.jpg" % imgname,media_caption=message.getCaption())
 
     def getLocationMessageBody(self, message):
         return "{{\"type\":\"{media_type}\",\"latitude\":\"{latitude}\",\"longitude\":\"{longitude}\",\"url\":\"{url}\",\"name\":\"{name}\"}}".format(

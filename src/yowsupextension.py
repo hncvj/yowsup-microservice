@@ -25,6 +25,7 @@ class YowsupExtension(DependencyProvider):
 
         tokenReSendMessage = self.container.config['TOKEN_RESEND_MESSAGES']
         urlReSendMessage = self.container.config['ENDPOINT_RESEND_MESSAGES']
+        
 
         credentials = (number, password)  # replace with your phone and password
 
