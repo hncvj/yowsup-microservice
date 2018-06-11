@@ -1,3 +1,4 @@
+simplejson
 nameko
 flask
 flasgger
