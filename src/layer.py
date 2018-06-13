@@ -184,8 +184,6 @@ class SendReciveLayer(YowInterfaceLayer):
         req.add_header('Content-Length', len(jsondataasbytes))
         req.add_header('TOKEN', self.tokenReSendMessage)
         req.add_header('User-Agent', 'Mozilla/5.0')
-        req.add_header('USER', 'hncvj')
-        req.add_header('PASS', '8080980809')
         # resend message to url from configuration
         try:
             response = urllib.request.urlopen(req, jsondataasbytes)
@@ -246,7 +244,8 @@ class SendReciveLayer(YowInterfaceLayer):
 
     def getDownloadableMediaMessageBody(self, message):
         imgname = uuid.uuid4().hex
-        path = os.getcwd()+'/static'
+        #path = os.getcwd()+'/static'
+        path = '../var/www/html/images/received'
         fullfile = "%s/%s.jpg"%(path,imgname)
 
         with open(fullfile,"wb") as f:
@@ -260,7 +259,7 @@ class SendReciveLayer(YowInterfaceLayer):
 	       #media_content=base64.b64encode(message.getMediaContent()).decode(),
            #media_caption=message.getCaption()
         #)
-        return "{{\"type\":\"{media_type}\",\"size\":\"{media_size}\",\"url\":\"{media_url}\",\"caption\":\"{media_caption}\"}}".format(media_type=message.getMediaType(),media_size=message.getMediaSize(),media_url="/static/%s.jpg" % imgname,media_caption=message.getCaption())
+        return "{{\"type\":\"{media_type}\",\"size\":\"{media_size}\",\"url\":\"{media_url}\",\"caption\":\"{media_caption}\"}}".format(media_type=message.getMediaType(),media_size=message.getMediaSize(),media_url="images/received/%s.jpg" % imgname,media_caption=message.getCaption())
 
     def getLocationMessageBody(self, message):
         return "{{\"type\":\"{media_type}\",\"latitude\":\"{latitude}\",\"longitude\":\"{longitude}\",\"url\":\"{url}\",\"name\":\"{name}\"}}".format(
